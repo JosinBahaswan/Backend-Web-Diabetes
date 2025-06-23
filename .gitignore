@@ -2,4 +2,3 @@
 __pycache__/
 *.pyc
 saved_images/
-diabetes_dataset.xlsx
