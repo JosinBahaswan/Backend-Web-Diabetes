@@ -1,0 +1,1 @@
+{"accuracy": 0.8413946704509618, "confusion_matrix": [[1438, 5552, 7], [1513, 41251, 31], [106, 838, 0]], "labels": ["diabetes", "no diabetes", "prediabetes"]}
