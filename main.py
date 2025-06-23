@@ -15,6 +15,9 @@ app = FastAPI()
 MODEL_PATH = 'diabetes_rf_model.joblib'
 ENCODER_PATH = 'sex_encoder.joblib'
 LABEL_PATH = 'diabetes_label_encoder.joblib'
+assert os.path.exists(MODEL_PATH), f"{MODEL_PATH} not found"
+assert os.path.exists(ENCODER_PATH), f"{ENCODER_PATH} not found"
+assert os.path.exists(LABEL_PATH), f"{LABEL_PATH} not found"
 model = load(MODEL_PATH)
 le_sex = load(ENCODER_PATH)
 le_diabetes = load(LABEL_PATH)
