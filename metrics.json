@@ -1,1 +1,1 @@
-{"accuracy": 0.8413946704509618, "confusion_matrix": [[1438, 5552, 7], [1513, 41251, 31], [106, 838, 0]], "labels": ["diabetes", "no diabetes", "prediabetes"]}
+{"accuracy": 0.8437060831158402, "confusion_matrix": [[2706, 4337], [3448, 39319]], "labels": ["diabetes", "no diabetes"], "best_params": {"bootstrap": true, "max_depth": 20, "max_features": null, "min_samples_split": 5, "n_estimators": 200}}

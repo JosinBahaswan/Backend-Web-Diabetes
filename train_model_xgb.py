@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from joblib import dump
@@ -42,16 +42,10 @@ y = df['Diabetes_012']
 cols_to_drop = ['NoDocbcCost', 'AnyHealthcare', 'MentHlth', 'PhysHlth']
 X = X.drop(columns=[col for col in cols_to_drop if col in X.columns])
 
-# Feature engineering: buat fitur baru dari kombinasi fitur penting
-X['BMI_Age'] = X['BMI'] * X['Age']
-X['GenHlth_BMI'] = X['GenHlth'] * X['BMI']
-X['GenHlth_Age'] = X['GenHlth'] * X['Age']
-
 # Normalisasi fitur numerik
 num_cols = X.select_dtypes(include=[np.number]).columns
 scaler = StandardScaler()
 X[num_cols] = scaler.fit_transform(X[num_cols])
-
 dump(scaler, 'scaler.joblib')
 
 # Split data
@@ -67,44 +61,22 @@ print(pd.Series(y_train).value_counts())
 param_grid = {
     'n_estimators': [100, 200],
     'max_depth': [10, 20],
-    'min_samples_split': [2, 5],
-    'max_features': ['sqrt', None],
-    'bootstrap': [True]
+    'learning_rate': [0.1, 0.2],
+    'subsample': [0.8, 1.0],
+    'colsample_bytree': [0.8, 1.0]
 }
-rf = RandomForestClassifier(random_state=42, class_weight='balanced')
+xgb = XGBClassifier(random_state=42, scale_pos_weight=1, eval_metric='logloss')
 grid_search = GridSearchCV(
-    rf, param_grid, cv=5, n_jobs=-1, scoring='f1', verbose=2
+    xgb, param_grid, cv=5, n_jobs=-1, scoring='f1', verbose=2
 )
 grid_search.fit(X_train, y_train)
 
 best_clf = grid_search.best_estimator_
 
-# Evaluasi modelh
+# Evaluasi model
 accuracy = accuracy_score(y_test, best_clf.predict(X_test))
 cm = confusion_matrix(y_test, best_clf.predict(X_test))
 report = classification_report(y_test, best_clf.predict(X_test))
-
-# Tuning threshold dengan acuan macro-F1 score
-from sklearn.metrics import f1_score
-# Probabilitas prediksi kelas 1 (diabetes)
-y_proba = best_clf.predict_proba(X_test)[:, 1]
-thresholds = np.arange(0.1, 0.91, 0.01)
-best_f1 = 0
-best_thresh = 0.5
-for thresh in thresholds:
-    y_pred_thresh = (y_proba >= thresh).astype(int)
-    f1 = f1_score(y_test, y_pred_thresh, average='macro')
-    if f1 > best_f1:
-        best_f1 = f1
-        best_thresh = thresh
-print(f"\nThreshold optimal untuk macro-F1: {best_thresh:.2f} (macro-F1: {best_f1:.4f})")
-# Evaluasi ulang dengan threshold optimal
-y_pred_opt = (y_proba >= best_thresh).astype(int)
-print("\nEvaluasi dengan threshold optimal:")
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred_opt))
-print("Classification Report:")
-print(classification_report(y_test, y_pred_opt))
 
 # Analisis feature importance
 importances = best_clf.feature_importances_
@@ -114,7 +86,7 @@ print("\nFeature Importance Ranking:")
 for i in range(len(features)):
     print(f"{i+1}. {features[indices[i]]}: {importances[indices[i]]:.4f}")
 plt.figure(figsize=(10,6))
-plt.title("Feature Importances")
+plt.title("Feature Importances (XGBoost)")
 plt.bar(range(len(features)), importances[indices], align="center")
 plt.xticks(range(len(features)), [features[i] for i in indices], rotation=90)
 plt.tight_layout()
@@ -134,18 +106,18 @@ metrics = {
     'labels': le_diabetes.classes_.tolist(),
     'best_params': grid_search.best_params_
 }
-with open('metrics.json', 'w') as f:
+with open('metrics_xgb.json', 'w') as f:
     json.dump(metrics, f)
 
 # Simpan model dan encoder
-MODEL_PATH = 'diabetes_rf_model.joblib'
+MODEL_PATH = 'diabetes_xgb_model.joblib'
 ENCODER_PATH = 'sex_encoder.joblib'
 LABEL_PATH = 'diabetes_label_encoder.joblib'
 dump(best_clf, MODEL_PATH)
 dump(le_sex, ENCODER_PATH)
 dump(le_diabetes, LABEL_PATH)
 
-print('Model terbaik, encoder, scaler, dan metrik evaluasi berhasil disimpan.')
+print('Model XGBoost, encoder, scaler, dan metrik evaluasi berhasil disimpan.')
 print(f"Akurasi: {accuracy:.4f}")
 print("Confusion Matrix:")
 print(cm)
@@ -153,14 +125,3 @@ print("Classification Report:")
 print(report)
 print("Parameter terbaik:")
 print(grid_search.best_params_)
-
-# Setelah threshold tuning macro-F1, eksperimen threshold manual lebih tinggi
-manual_thresh = best_thresh + 0.05  # threshold sedikit di atas threshold optimal
-if manual_thresh > 0.9:
-    manual_thresh = 0.9
-print(f"\nEvaluasi dengan threshold manual {manual_thresh:.2f}:")
-y_pred_manual = (y_proba >= manual_thresh).astype(int)
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred_manual))
-print("Classification Report:")
-print(classification_report(y_test, y_pred_manual))

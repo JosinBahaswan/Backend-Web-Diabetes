@@ -1,4 +1,3 @@
-*.joblib
 __pycache__/
 *.pyc
 saved_images/

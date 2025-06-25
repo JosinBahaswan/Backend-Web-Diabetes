@@ -104,7 +104,15 @@ def get_metrics():
         return {'error': 'metrics.json not found'}
     with open(metrics_path, 'r') as f:
         metrics = json.load(f)
-    return metrics
+    # Pastikan confusion matrix dan label ada
+    confusion_matrix = metrics.get('confusion_matrix')
+    labels = metrics.get('labels')
+    accuracy = metrics.get('accuracy')
+    return {
+        'accuracy': accuracy,
+        'confusion_matrix': confusion_matrix,
+        'labels': labels
+    }
 
 @app.post('/save-table-image')
 def save_table_image(image_base64: str):
