@@ -1,0 +1,116 @@
+Memuat data dari file Excel...
+Jumlah total data awal: 253680
+Jumlah data setelah menghapus nilai kosong: 253677
+Jumlah data setelah menyaring hanya 2 kelas (no diabetes & diabetes): 249046
+🔠 Melakukan label encoding pada kolom kategorikal...
+🪛 Kolom yang dihapus: ['NoDocbcCost', 'AnyHealthcare', 'MentHlth', 'PhysHlth']
+📏 Melakukan normalisasi pada fitur numerik...
+✅ Normalisasi selesai dan scaler disimpan.
+🔀 Membagi data menjadi data latih dan data uji (80:20)...
+
+📊 Distribusi kelas sebelum balancing (data latih):
+Diabetes_012
+1    170959
+0     28277
+Name: count, dtype: int64
+
+🔁 Tahap 1: SMOTE oversampling minoritas 2.5x...
+✅ Distribusi kelas setelah SMOTE:
+Diabetes_012
+1    170959
+0     70692
+Name: count, dtype: int64
+
+📉 Tahap 2: Undersampling kelas mayoritas agar sama...
+✅ Distribusi kelas setelah undersampling:
+Diabetes_012
+0    70692
+1    70692
+Name: count, dtype: int64
+
+➕ Tahap 3: Menambahkan 20.000 data ke kelas mayoritas...
+✅ Distribusi kelas akhir:
+Diabetes_012
+1    85692
+0    70692
+Name: count, dtype: int64
+
+⚖️ Cost-sensitive learning (kelas 1 dihukum 2x)...
+
+🔁 Validasi silang (StratifiedKFold)...
+Skor F1-macro tiap fold: [0.74133047 0.74045186 0.73745334 0.74666349 0.93076503 0.93115001
+ 0.93018251 0.93089729 0.92833769 0.92592358]
+Rata-rata F1-macro: 0.8543 (+/- 0.0922)
+
+🧪 GridSearchCV tuning...
+Fitting 10 folds for each of 16 candidates, totalling 160 fits
+
+ Best Params: {'bootstrap': True, 'max_depth': 20, 'max_features': 'sqrt', 'min_samples_split': 2, 'n_estimators': 200}
+
+🔍 Evaluasi model awal...
+
+🎯 Tuning threshold untuk macro-F1 dan recall kelas 0...
+🎯 Threshold terbaik (macro-F1): 0.50 - F1: 0.6773
+🎯 Threshold terbaik (recall kelas 0): 0.90 - Recall 0: 0.9344
+
+📊 Evaluasi dengan threshold macro-F1:
+[[ 3285  3784]
+ [ 4267 38474]]
+              precision    recall  f1-score   support
+
+           0       0.43      0.46      0.45      7069
+           1       0.91      0.90      0.91     42741
+
+    accuracy                           0.84     49810
+   macro avg       0.67      0.68      0.68     49810
+weighted avg       0.84      0.84      0.84     49810
+
+
+📊 Evaluasi dengan threshold recall kelas 0:
+[[ 6605   464]
+ [22463 20278]]
+              precision    recall  f1-score   support
+
+           0       0.23      0.93      0.37      7069
+           1       0.98      0.47      0.64     42741
+
+    accuracy                           0.54     49810
+   macro avg       0.60      0.70      0.50     49810
+weighted avg       0.87      0.54      0.60     49810
+
+
+📌 Feature importance:
+1. GenHlth: 0.2075
+2. BMI: 0.1873
+3. Age: 0.1583
+4. Income: 0.1012
+5. HighBP: 0.0931
+6. Education: 0.0530
+7. HighChol: 0.0506
+8. DiffWalk: 0.0300
+9. Smoker: 0.0176
+10. Fruits: 0.0175
+11. Sex: 0.0172
+12. PhysActivity: 0.0162
+13. HeartDiseaseorAttack: 0.0152
+14. Veggies: 0.0147
+15. Stroke: 0.0090
+16. HvyAlcoholConsump: 0.0074
+17. CholCheck: 0.0041
+
+💾 Menyimpan model dan metrik...
+
+✅ Proses selesai.
+Akurasi akhir: 0.8384
+Confusion Matrix:
+[[ 3285  3784]
+ [ 4267 38474]]
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.43      0.46      0.45      7069
+           1       0.91      0.90      0.91     42741
+
+    accuracy                           0.84     49810
+   macro avg       0.67      0.68      0.68     49810
+weighted avg       0.84      0.84      0.84     49810

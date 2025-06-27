@@ -1,1 +1,1 @@
-{"accuracy": 0.8437060831158402, "confusion_matrix": [[2706, 4337], [3448, 39319]], "labels": ["diabetes", "no diabetes"], "best_params": {"bootstrap": true, "max_depth": 20, "max_features": null, "min_samples_split": 5, "n_estimators": 200}}
+{"accuracy": 0.8383657900020076, "confusion_matrix": [[3285, 3784], [4267, 38474]], "labels": ["diabetes", "no diabetes"], "best_params": {"bootstrap": true, "max_depth": 20, "max_features": "sqrt", "min_samples_split": 2, "n_estimators": 200}, "threshold_macro_f1": 0.4999999999999998, "threshold_recall_0": 0.8999999999999996}
