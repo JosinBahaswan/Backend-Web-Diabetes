@@ -140,14 +140,14 @@ def predict_diabetes(data: DiabetesInput):
         # Apply feature selection
         input_data_selected = feature_selector.transform(df)
         
-        # Dapatkan probabilitas prediksi
+        # Dapatkan probabilitas klasifikasi
         proba = model.predict_proba(input_data_selected)[0]
         class_labels = le_diabetes.classes_.tolist()
         
         # Cari indeks kelas "diabetes" (biasanya indeks 0)
         diabetes_idx = class_labels.index("diabetes") if "diabetes" in class_labels else 0
         
-        # Gunakan threshold dari training untuk prediksi
+        # Gunakan threshold dari training untuk klasifikasi
         if proba[diabetes_idx] < threshold:
             pred_label = "no diabetes"
             pred_idx = class_labels.index("no diabetes") if "no diabetes" in class_labels else 1
@@ -155,7 +155,7 @@ def predict_diabetes(data: DiabetesInput):
             pred_label = "diabetes"
             pred_idx = diabetes_idx
         
-        # Kembalikan hasil prediksi, label, dan probabilitas
+        # Kembalikan hasil klasifikasi, label, dan probabilitas
         return {
             'prediction': pred_idx,
             'label': pred_label,
@@ -172,7 +172,7 @@ def predict_diabetes(data: DiabetesInput):
 
 @app.get('/')
 def root():
-    return {'message': 'API Prediksi Diabetes siap digunakan.'}
+    return {'message': 'API Klasifikasi Diabetes siap digunakan.'}
 
 @app.get('/metrics')
 def get_metrics():

@@ -86,7 +86,7 @@ report = classification_report(y_test, best_clf.predict(X_test))
 
 # Tuning threshold dengan acuan macro-F1 score
 from sklearn.metrics import f1_score
-# Probabilitas prediksi kelas 1 (diabetes)
+# Probabilitas klasifikasi kelas 1 (diabetes)
 y_proba = best_clf.predict_proba(X_test)[:, 1]
 thresholds = np.arange(0.1, 0.91, 0.01)
 best_f1 = 0
@@ -120,11 +120,11 @@ plt.xticks(range(len(features)), [features[i] for i in indices], rotation=90)
 plt.tight_layout()
 plt.show()
 
-# Analisis error pada prediksi kelas "no diabetes" (label 0)
+# Analisis error pada klasifikasi kelas "no diabetes" (label 0)
 y_pred = best_clf.predict(X_test)
 error_idx = (y_test == 0) & (y_pred != 0)
-print(f"\nJumlah data 'no diabetes' yang salah diprediksi: {error_idx.sum()} dari {sum(y_test == 0)}")
-print("\nContoh data 'no diabetes' yang salah diprediksi:")
+print(f"\nJumlah data 'no diabetes' yang salah klasifikasi: {error_idx.sum()} dari {sum(y_test == 0)}")
+print("\nContoh data 'no diabetes' yang salah klasifikasi:")
 print(X_test[error_idx].head())
 
 # Simpan metrik evaluasi ke file

@@ -1,4 +1,4 @@
-# requirements.txt untuk backend prediksi diabetes
+# requirements.txt untuk backend klasifikasi diabetes
 fastapi
 uvicorn
 scikit-learn
