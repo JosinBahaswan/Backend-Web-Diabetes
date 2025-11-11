@@ -20,24 +20,50 @@ LABEL_PATH = 'diabetes_label_encoder_balanced.joblib'
 SCALER_PATH = 'scaler_balanced.joblib'
 SELECTOR_PATH = 'feature_selector_balanced.joblib'
 
-assert os.path.exists(MODEL_PATH), f"{MODEL_PATH} not found"
-assert os.path.exists(ENCODER_PATH), f"{ENCODER_PATH} not found"
-assert os.path.exists(LABEL_PATH), f"{LABEL_PATH} not found"
-assert os.path.exists(SCALER_PATH), f"{SCALER_PATH} not found"
-assert os.path.exists(SELECTOR_PATH), f"{SELECTOR_PATH} not found"
+# Cek keberadaan file
+print("🔍 Checking model files...")
+for path in [MODEL_PATH, ENCODER_PATH, LABEL_PATH, SCALER_PATH, SELECTOR_PATH]:
+    if os.path.exists(path):
+        size = os.path.getsize(path)
+        print(f"✅ {path} exists ({size} bytes)")
+    else:
+        print(f"❌ {path} NOT FOUND")
+        raise FileNotFoundError(f"{path} not found")
 
+# Load dengan error handling yang lebih baik
 try:
+    print(f"📂 Loading {MODEL_PATH}...")
+    import sklearn
+    print(f"   scikit-learn version: {sklearn.__version__}")
     model = load(MODEL_PATH)
+    print(f"✅ Model loaded: {type(model)}")
+    
+    print(f"📂 Loading {ENCODER_PATH}...")
     le_sex = load(ENCODER_PATH)
+    print(f"✅ Sex encoder loaded: {type(le_sex)}")
+    
+    print(f"📂 Loading {LABEL_PATH}...")
     le_diabetes = load(LABEL_PATH)
+    print(f"✅ Label encoder loaded: {type(le_diabetes)}")
+    
+    print(f"📂 Loading {SCALER_PATH}...")
     scaler = load(SCALER_PATH)
+    print(f"✅ Scaler loaded: {type(scaler)}")
+    
+    print(f"📂 Loading {SELECTOR_PATH}...")
     feature_selector = load(SELECTOR_PATH)
+    print(f"✅ Feature selector loaded: {type(feature_selector)}")
+    
     print("✅ All models and encoders loaded successfully")
 except Exception as e:
     print(f"❌ Error loading models: {e}")
     import traceback
     traceback.print_exc()
-    raise
+    print("\n⚠️ Possible causes:")
+    print("1. Model was trained with different Python/scikit-learn version")
+    print("2. Model file is corrupted")
+    print("3. Model uses features not available in current environment")
+    raise RuntimeError(f"Failed to load model: {e}") from e
 
 # Get feature names in the exact order used during training
 FEATURE_NAMES = feature_selector.feature_names_in_
