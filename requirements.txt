@@ -1,4 +1,5 @@
 # requirements.txt untuk backend klasifikasi diabetes
+# Updated: 2025-11-11 - Force rebuild
 fastapi
 uvicorn
 scikit-learn
@@ -6,3 +7,4 @@ pandas
 joblib
 openpyxl
 imbalanced-learn
+matplotlib
