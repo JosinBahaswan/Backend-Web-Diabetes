@@ -26,11 +26,18 @@ assert os.path.exists(LABEL_PATH), f"{LABEL_PATH} not found"
 assert os.path.exists(SCALER_PATH), f"{SCALER_PATH} not found"
 assert os.path.exists(SELECTOR_PATH), f"{SELECTOR_PATH} not found"
 
-model = load(MODEL_PATH)
-le_sex = load(ENCODER_PATH)
-le_diabetes = load(LABEL_PATH)
-scaler = load(SCALER_PATH)
-feature_selector = load(SELECTOR_PATH)
+try:
+    model = load(MODEL_PATH)
+    le_sex = load(ENCODER_PATH)
+    le_diabetes = load(LABEL_PATH)
+    scaler = load(SCALER_PATH)
+    feature_selector = load(SELECTOR_PATH)
+    print("✅ All models and encoders loaded successfully")
+except Exception as e:
+    print(f"❌ Error loading models: {e}")
+    import traceback
+    traceback.print_exc()
+    raise
 
 # Get feature names in the exact order used during training
 FEATURE_NAMES = feature_selector.feature_names_in_
